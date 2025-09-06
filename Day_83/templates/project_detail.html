@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}{{ project.title }} - My Portfolio{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('home') }}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('projects') }}">Projects</a></li>
+                    <li class="breadcrumb-item active">{{ project.title }}</li>
+                </ol>
+            </nav>
+
+            <h1 class="mb-3">{{ project.title }}</h1>
+            
+            <div class="mb-4">
+                {% for tech in project.technologies %}
+                    <span class="badge bg-primary me-1 mb-1 fs-6">{{ tech }}</span>
+                {% endfor %}
+            </div>
+
+            <div class="bg-light p-4 rounded mb-4 text-center">
+                <i class="fas fa-laptop-code fa-8x text-muted"></i>
+                <p class="text-muted mt-2">Project Screenshot/Demo Image</p>
+            </div>
+
+            <div class="mb-4">
+                <h3>Project Description</h3>
+                <p class="lead">{{ project.description }}</p>
+            </div>
+
+            <div class="mb-4">
+                <h3>Features</h3>
+                {% if project.title == "Morse Code Converter" %}
+                <ul>
+                    <li>Convert text to Morse code and vice versa</li>
+                    <li>Support for letters, numbers, and special characters</li>
+                    <li>Interactive menu system</li>
+                    <li>Built-in Morse code reference chart</li>
+                    <li>Error handling for invalid inputs</li>
+                </ul>
+                {% elif project.title == "Blog Website" %}
+                <ul>
+                    <li>User registration and authentication</li>
+                    <li>Create, edit, and delete blog posts</li>
+                    <li>Comment system with user profiles</li>
+                    <li>Admin panel for content management</li>
+                    <li>Responsive design with Bootstrap</li>
+                </ul>
+                {% elif project.title == "Snake Game" %}
+                <ul>
+                    <li>Classic Snake gameplay mechanics</li>
+                    <li>Score tracking and high scores</li>
+                    <li>Collision detection</li>
+                    <li>Smooth graphics using Turtle</li>
+                    <li>Keyboard controls</li>
+                </ul>
+                {% else %}
+                <ul>
+                    <li>Real-time weather data fetching</li>
+                    <li>Multiple city search functionality</li>
+                    <li>Weather forecast display</li>
+                    <li>Clean and intuitive interface</li>
+                    <li>API integration with error handling</li>
+                </ul>
+                {% endif %}
+            </div>
+
+            <div class="mb-4">
+                <h3>Technologies Used</h3>
+                <div class="row">
+                    {% for tech in project.technologies %}
+                    <div class="col-md-4 col-6 mb-2">
+                        <div class="border rounded p-2 text-center">
+                            <strong>{{ tech }}</strong>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <h3>What I Learned</h3>
+                {% if project.title == "Morse Code Converter" %}
+                <p>This project helped me understand dictionary data structures, string manipulation, and user input validation. I also learned about creating clean, user-friendly menu systems and handling edge cases in user input.</p>
+                {% elif project.title == "Blog Website" %}
+                <p>Building this blog taught me about web frameworks, database relationships, user authentication, and security best practices. I gained experience with Flask, SQLAlchemy, and creating responsive web interfaces.</p>
+                {% elif project.title == "Snake Game" %}
+                <p>This project introduced me to game development concepts, object-oriented programming, and graphics programming with Turtle. I learned about game loops, collision detection, and state management.</p>
+                {% else %}
+                <p>Working with APIs taught me about HTTP requests, JSON data parsing, and error handling. I learned how to integrate external services and handle network-related issues gracefully.</p>
+                {% endif %}
+            </div>
+
+            <div class="d-flex gap-3 mb-4">
+                {% if project.github_link %}
+                <a href="{{ project.github_link }}" class="btn btn-dark btn-lg" target="_blank">
+                    <i class="fab fa-github"></i> View on GitHub
+                </a>
+                {% endif %}
+                {% if project.demo_link %}
+                <a href="{{ project.demo_link }}" class="btn btn-success btn-lg" target="_blank">
+                    <i class="fas fa-external-link-alt"></i> Live Demo
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Project Details</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Status:</strong> <span class="text-success">Completed</span></p>
+                    <p><strong>Type:</strong> Personal Project</p>
+                    <p><strong>Duration:</strong> 1-2 weeks</p>
+                    
+                    <hr>
+                    
+                    <h6>Quick Links</h6>
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('projects') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-arrow-left"></i> Back to Projects
+                        </a>
+                        <a href="{{ url_for('contact') }}" class="btn btn-outline-success">
+                            <i class="fas fa-envelope"></i> Ask About This Project
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5>Other Projects</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Check out my other projects:</p>
+                    <a href="{{ url_for('projects') }}" class="btn btn-sm btn-outline-primary">
+                        View All Projects
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

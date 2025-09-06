@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Add Task - Todo List{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="fas fa-plus me-2"></i>Add New Task</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="task" class="form-label">Task Title</label>
+                        <input type="text" class="form-control" id="task" name="task" required 
+                               placeholder="Enter task title">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3"
+                                  placeholder="Enter task description (optional)"></textarea>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="priority" class="form-label">Priority</label>
+                                <select class="form-select" id="priority" name="priority" required>
+                                    <option value="low">
+                                        <span class="text-success">🟢</span> Low Priority
+                                    </option>
+                                    <option value="medium" selected>
+                                        <span class="text-warning">🟡</span> Medium Priority
+                                    </option>
+                                    <option value="high">
+                                        <span class="text-danger">🔴</span> High Priority
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="category" class="form-label">Category</label>
+                                <input type="text" class="form-control" id="category" name="category" required
+                                       placeholder="e.g., Work, Personal, Health" list="categories">
+                                <datalist id="categories">
+                                    <option value="Work">
+                                    <option value="Personal">
+                                    <option value="Health">
+                                    <option value="Education">
+                                    <option value="Finance">
+                                    <option value="Shopping">
+                                    <option value="Family">
+                                    <option value="Hobbies">
+                                </datalist>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="due_date" class="form-label">Due Date (Optional)</label>
+                        <input type="date" class="form-control" id="due_date" name="due_date"
+                               min="{{ now.strftime('%Y-%m-%d') }}">
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('home') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-plus me-2"></i>Add Task
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6><i class="fas fa-lightbulb me-2"></i>Tips for Better Task Management</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="list-unstyled small">
+                            <li><i class="fas fa-check text-success me-2"></i>Be specific with task titles</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Set realistic due dates</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Use categories to organize tasks</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="list-unstyled small">
+                            <li><i class="fas fa-check text-success me-2"></i>Prioritize important tasks</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Break large tasks into smaller ones</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Review and update regularly</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('task').focus();
+
+document.getElementById('priority').addEventListener('change', function() {
+    const priorityCard = document.querySelector('.card');
+    priorityCard.classList.remove('border-success', 'border-warning', 'border-danger');
+    
+    if (this.value === 'high') {
+        priorityCard.classList.add('border-danger');
+    } else if (this.value === 'medium') {
+        priorityCard.classList.add('border-warning');
+    } else {
+        priorityCard.classList.add('border-success');
+    }
+});
+</script>
+{% endblock %}

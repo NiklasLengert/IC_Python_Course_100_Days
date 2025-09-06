@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card stats-card text-center">
+            <div class="card-body">
+                <h3 class="card-title">{{ stats.total }}</h3>
+                <p class="card-text">Total Tasks</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white text-center">
+            <div class="card-body">
+                <h3 class="card-title">{{ stats.completed }}</h3>
+                <p class="card-text">Completed</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-white text-center">
+            <div class="card-body">
+                <h3 class="card-title">{{ stats.pending }}</h3>
+                <p class="card-text">Pending</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-danger text-white text-center">
+            <div class="card-body">
+                <h3 class="card-title">{{ stats.high_priority }}</h3>
+                <p class="card-text">High Priority</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-3">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-filter me-2"></i>Filters</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">Status</label>
+                    <select id="statusFilter" class="form-select">
+                        <option value="all" {{ 'selected' if current_filter == 'all' }}>All Tasks</option>
+                        <option value="pending" {{ 'selected' if current_filter == 'pending' }}>Pending</option>
+                        <option value="completed" {{ 'selected' if current_filter == 'completed' }}>Completed</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Category</label>
+                    <select id="categoryFilter" class="form-select">
+                        <option value="all" {{ 'selected' if current_category == 'all' }}>All Categories</option>
+                        {% for category in categories %}
+                            <option value="{{ category }}" {{ 'selected' if current_category == category }}>{{ category }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button onclick="applyFilters()" class="btn btn-primary w-100">
+                    <i class="fas fa-search me-2"></i>Apply Filters
+                </button>
+                <a href="{{ url_for('home') }}" class="btn btn-outline-secondary w-100 mt-2">
+                    <i class="fas fa-undo me-2"></i>Clear Filters
+                </a>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5><i class="fas fa-chart-pie me-2"></i>Progress</h5>
+            </div>
+            <div class="card-body">
+                {% set completion_rate = (stats.completed / stats.total * 100)|round|int if stats.total > 0 else 0 %}
+                <div class="text-center mb-3">
+                    <div class="display-6 mb-2">{{ completion_rate }}%</div>
+                    <div class="progress">
+                        <div class="progress-bar bg-success" data-completion="{{ completion_rate }}" style="width: 0%"></div>
+                    </div>
+                </div>
+                <small class="text-muted">Tasks completed</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-9">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2><i class="fas fa-list me-2"></i>Your Tasks</h2>
+            <a href="{{ url_for('add_todo') }}" class="btn btn-success">
+                <i class="fas fa-plus me-2"></i>Add New Task
+            </a>
+        </div>
+        
+        {% if todos %}
+            <div class="row">
+                {% for todo in todos %}
+                    {% set is_overdue = todo.due_date and todo.due_date.date() < now.date() and not todo.completed %}
+                    {% set is_due_soon = todo.due_date and (todo.due_date.date() - now.date()).days <= 3 and (todo.due_date.date() - now.date()).days >= 0 and not todo.completed %}
+                    
+                    <div class="col-lg-6 mb-3">
+                        <div class="card task-card h-100 priority-{{ todo.priority }} {{ 'overdue' if is_overdue else ('due-soon' if is_due_soon else '') }}">
+                            <div class="card-body {{ 'completed-task' if todo.completed }}">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="card-title mb-0">{{ todo.task }}</h6>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{{ url_for('toggle_todo', todo_id=todo.id) }}" 
+                                           class="btn btn-outline-success" title="Toggle completion">
+                                            <i class="fas fa-{{ 'undo' if todo.completed else 'check' }}"></i>
+                                        </a>
+                                        <a href="{{ url_for('edit_todo', todo_id=todo.id) }}" 
+                                           class="btn btn-outline-primary" title="Edit task">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="{{ url_for('delete_todo', todo_id=todo.id) }}" 
+                                           class="btn btn-outline-danger" title="Delete task"
+                                           onclick="return confirm('Are you sure you want to delete this task?')">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                
+                                <p class="card-text text-muted small">{{ todo.description }}</p>
+                                
+                                <div class="d-flex flex-wrap gap-2 mb-2">
+                                    <span class="badge bg-{{ 'danger' if todo.priority == 'high' else ('warning' if todo.priority == 'medium' else 'success') }}">
+                                        <i class="fas fa-flag me-1"></i>{{ todo.priority.title() }}
+                                    </span>
+                                    <span class="badge bg-info category-badge">
+                                        <i class="fas fa-tag me-1"></i>{{ todo.category }}
+                                    </span>
+                                    {% if todo.completed %}
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check-circle me-1"></i>Completed
+                                        </span>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="small text-muted">
+                                    <div>
+                                        <i class="fas fa-calendar-plus me-1"></i>
+                                        Created: {{ todo.created_at.strftime('%b %d, %Y') }}
+                                    </div>
+                                    {% if todo.due_date %}
+                                        <div class="{{ 'text-danger fw-bold' if is_overdue else ('text-warning fw-bold' if is_due_soon else '') }}">
+                                            <i class="fas fa-calendar-check me-1"></i>
+                                            Due: {{ todo.due_date.strftime('%b %d, %Y') }}
+                                            {% if is_overdue %}
+                                                <span class="badge bg-danger ms-1">OVERDUE</span>
+                                            {% elif is_due_soon %}
+                                                <span class="badge bg-warning ms-1">DUE SOON</span>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-clipboard-list fa-4x text-muted mb-3"></i>
+                <h4 class="text-muted">No tasks found</h4>
+                <p class="text-muted">Start by adding your first task!</p>
+                <a href="{{ url_for('add_todo') }}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Add Your First Task
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function applyFilters() {
+    const status = document.getElementById('statusFilter').value;
+    const category = document.getElementById('categoryFilter').value;
+    const url = new URL(window.location.href);
+    url.searchParams.set('filter', status);
+    url.searchParams.set('category', category);
+    window.location.href = url.toString();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const progressBar = document.querySelector('.progress-bar[data-completion]');
+    if (progressBar) {
+        const completion = progressBar.getAttribute('data-completion');
+        setTimeout(() => {
+            progressBar.style.width = completion + '%';
+        }, 100);
+    }
+});
+</script>
+{% endblock %}

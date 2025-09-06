@@ -1,0 +1,307 @@
+{% extends "base.html" %}
+
+{% block title %}Writing Session - Dangerous Writer{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="row g-0">
+        <div class="col-12">
+            <div class="bg-dark text-white p-3">
+                <div class="container-fluid">
+                    <div class="row align-items-center">
+                        <div class="col-md-3">
+                            <div class="d-flex align-items-center">
+                                <div class="timer-circle d-flex align-items-center justify-content-center me-3" id="timerCircle">
+                                    <span class="fw-bold" id="timerDisplay">{{ "%.1f"|format(timeout/1000) }}s</span>
+                                </div>
+                                <div>
+                                    <div class="fw-bold">{{ difficulty.title() }} Mode</div>
+                                    <small class="text-muted">Timeout: {{ "%.1f"|format(timeout/1000) }}s</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-center">
+                            <div class="stats-card rounded p-3">
+                                <div class="row text-dark">
+                                    <div class="col-4">
+                                        <div class="fw-bold fs-4" id="wordCount">0</div>
+                                        <small>Words</small>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="fw-bold fs-4" id="charCount">0</div>
+                                        <small>Characters</small>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="fw-bold fs-4" id="timeElapsed">0:00</div>
+                                        <small>Time</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-end">
+                            <button class="btn btn-success me-2" id="saveBtn" onclick="saveSession()" disabled>
+                                <i class="fas fa-save me-2"></i>Save Work
+                            </button>
+                            <a href="{{ url_for('home') }}" class="btn btn-outline-light" onclick="return confirmExit()">
+                                <i class="fas fa-home me-2"></i>Exit
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row g-0">
+        <div class="col-12">
+            <div class="position-relative" data-timeout="{{ timeout }}" data-difficulty="{{ difficulty }}">
+                <textarea 
+                    class="form-control writing-area border-0 p-4" 
+                    id="writingArea"
+                    placeholder="Start typing... and don't stop! Your work will disappear if you pause for too long."
+                    style="resize: none; font-size: 1.2rem; line-height: 1.6;"
+                    autofocus></textarea>
+                
+                <div class="position-absolute top-50 start-50 translate-middle text-center d-none" id="gameOverScreen">
+                    <div class="bg-danger text-white p-5 rounded-3 shadow">
+                        <i class="fas fa-skull-crossbones fa-4x mb-3"></i>
+                        <h3 class="fw-bold">GAME OVER</h3>
+                        <p class="mb-4">You stopped typing! All your work has been lost.</p>
+                        <div class="mb-3">
+                            <div class="fw-bold">Final Stats:</div>
+                            <div>Words: <span id="finalWords">0</span></div>
+                            <div>Characters: <span id="finalChars">0</span></div>
+                            <div>Time: <span id="finalTime">0:00</span></div>
+                        </div>
+                        <a href="{{ url_for('home') }}" class="btn btn-light btn-lg me-3">
+                            <i class="fas fa-home me-2"></i>Try Again
+                        </a>
+                        <a href="{{ url_for('sessions') }}" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-history me-2"></i>View Sessions
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="position-absolute top-50 start-50 translate-middle text-center d-none" id="successScreen">
+                    <div class="bg-success text-white p-5 rounded-3 shadow">
+                        <i class="fas fa-trophy fa-4x mb-3"></i>
+                        <h3 class="fw-bold">SESSION SAVED!</h3>
+                        <p class="mb-4">Congratulations! Your writing session has been saved.</p>
+                        <div class="mb-3">
+                            <div class="fw-bold">Final Stats:</div>
+                            <div>Words: <span id="successWords">0</span></div>
+                            <div>Characters: <span id="successChars">0</span></div>
+                            <div>Time: <span id="successTime">0:00</span></div>
+                        </div>
+                        <a href="{{ url_for('home') }}" class="btn btn-light btn-lg me-3">
+                            <i class="fas fa-home me-2"></i>Write Again
+                        </a>
+                        <a href="{{ url_for('sessions') }}" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-history me-2"></i>View All Sessions
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="position-fixed bottom-0 end-0 p-4">
+    <div class="toast align-items-center text-white border-0" id="warningToast" role="alert" data-bs-autohide="false">
+        <div class="d-flex">
+            <div class="toast-body fw-bold">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                Keep typing or lose everything!
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const dataContainer = document.querySelector('[data-timeout]');
+let timeoutDuration = parseInt(dataContainer.getAttribute('data-timeout'));
+let difficulty = dataContainer.getAttribute('data-difficulty');
+let timer = null;
+let timeLeft = timeoutDuration;
+let startTime = Date.now();
+let isTyping = false;
+let hasStarted = false;
+
+const writingArea = document.getElementById('writingArea');
+const timerDisplay = document.getElementById('timerDisplay');
+const timerCircle = document.getElementById('timerCircle');
+const wordCount = document.getElementById('wordCount');
+const charCount = document.getElementById('charCount');
+const timeElapsed = document.getElementById('timeElapsed');
+const saveBtn = document.getElementById('saveBtn');
+const gameOverScreen = document.getElementById('gameOverScreen');
+const successScreen = document.getElementById('successScreen');
+const warningToast = new bootstrap.Toast(document.getElementById('warningToast'));
+
+function updateStats() {
+    const text = writingArea.value;
+    const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+    const chars = text.length;
+    
+    wordCount.textContent = words;
+    charCount.textContent = chars;
+    
+    if (words > 0) {
+        saveBtn.disabled = false;
+    }
+}
+
+function updateTimer() {
+    const elapsed = Date.now() - startTime;
+    const minutes = Math.floor(elapsed / 60000);
+    const seconds = Math.floor((elapsed % 60000) / 1000);
+    timeElapsed.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+}
+
+function resetTimer() {
+    clearInterval(timer);
+    timeLeft = timeoutDuration;
+    updateTimerDisplay();
+    
+    timer = setInterval(() => {
+        timeLeft -= 100;
+        updateTimerDisplay();
+        
+        if (timeLeft <= 0) {
+            gameOver();
+        }
+    }, 100);
+}
+
+function updateTimerDisplay() {
+    const seconds = Math.max(0, timeLeft / 1000);
+    timerDisplay.textContent = seconds.toFixed(1) + 's';
+    
+    const percentage = (timeLeft / timeoutDuration) * 100;
+    
+    writingArea.classList.remove('danger', 'warning', 'safe');
+    timerCircle.classList.remove('danger', 'warning', 'safe');
+    
+    if (percentage <= 20) {
+        writingArea.classList.add('danger');
+        timerCircle.classList.add('danger');
+        if (!document.querySelector('.toast.show')) {
+            document.getElementById('warningToast').classList.add('bg-danger');
+            warningToast.show();
+        }
+    } else if (percentage <= 50) {
+        writingArea.classList.add('warning');
+        timerCircle.classList.add('warning');
+        document.getElementById('warningToast').classList.remove('bg-danger');
+        document.getElementById('warningToast').classList.add('bg-warning');
+    } else {
+        writingArea.classList.add('safe');
+        timerCircle.classList.add('safe');
+        warningToast.hide();
+    }
+}
+
+function gameOver() {
+    clearInterval(timer);
+    const finalStats = getFinalStats();
+    
+    document.getElementById('finalWords').textContent = finalStats.words;
+    document.getElementById('finalChars').textContent = finalStats.chars;
+    document.getElementById('finalTime').textContent = finalStats.time;
+    
+    writingArea.style.display = 'none';
+    gameOverScreen.classList.remove('d-none');
+}
+
+function getFinalStats() {
+    const text = writingArea.value;
+    const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+    const chars = text.length;
+    const elapsed = Date.now() - startTime;
+    const minutes = Math.floor(elapsed / 60000);
+    const seconds = Math.floor((elapsed % 60000) / 1000);
+    const time = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    
+    return { words, chars, time, elapsed };
+}
+
+function saveSession() {
+    const stats = getFinalStats();
+    const sessionData = {
+        content: writingArea.value,
+        word_count: stats.words,
+        char_count: stats.chars,
+        writing_time: Math.floor(stats.elapsed / 1000),
+        difficulty: difficulty,
+        completed: true
+    };
+    
+    fetch('/save_session', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(sessionData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            clearInterval(timer);
+            
+            document.getElementById('successWords').textContent = stats.words;
+            document.getElementById('successChars').textContent = stats.chars;
+            document.getElementById('successTime').textContent = stats.time;
+            
+            writingArea.style.display = 'none';
+            successScreen.classList.remove('d-none');
+        }
+    })
+    .catch(error => {
+        console.error('Error saving session:', error);
+        alert('Error saving session. Please try again.');
+    });
+}
+
+function confirmExit() {
+    if (hasStarted && writingArea.value.trim()) {
+        return confirm('Are you sure you want to exit? All unsaved work will be lost!');
+    }
+    return true;
+}
+
+writingArea.addEventListener('input', () => {
+    if (!hasStarted) {
+        hasStarted = true;
+        resetTimer();
+        setInterval(updateTimer, 1000);
+    }
+    
+    resetTimer();
+    updateStats();
+});
+
+writingArea.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab') {
+        e.preventDefault();
+        const start = writingArea.selectionStart;
+        const end = writingArea.selectionEnd;
+        writingArea.value = writingArea.value.substring(0, start) + '    ' + writingArea.value.substring(end);
+        writingArea.selectionStart = writingArea.selectionEnd = start + 4;
+    }
+});
+
+window.addEventListener('beforeunload', (e) => {
+    if (hasStarted && writingArea.value.trim()) {
+        e.preventDefault();
+        e.returnValue = 'Are you sure you want to leave? All unsaved work will be lost!';
+    }
+});
+
+updateTimerDisplay();
+updateStats();
+setInterval(updateTimer, 1000);
+</script>
+{% endblock %}

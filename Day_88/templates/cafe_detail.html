@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <img src="{{ cafe.img_url }}" class="card-img-top" alt="{{ cafe.name }}" style="height: 300px; object-fit: cover;">
+                <div class="card-body">
+                    <h2 class="card-title">{{ cafe.name }}</h2>
+                    <p class="text-muted mb-3">
+                        <i class="fas fa-map-marker-alt"></i> {{ cafe.location }}
+                    </p>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Details</h5>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-chair text-info"></i> <strong>Seats:</strong> {{ cafe.seats }}</li>
+                                <li><i class="fas fa-dollar-sign text-success"></i> <strong>Coffee Price:</strong> {{ cafe.coffee_price }}</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Amenities</h5>
+                            <div class="d-flex flex-wrap gap-2">
+                                {% if cafe.has_wifi %}
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-wifi"></i> WiFi Available
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-danger">
+                                        <i class="fas fa-wifi"></i> No WiFi
+                                    </span>
+                                {% endif %}
+                                
+                                {% if cafe.has_sockets %}
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="fas fa-plug"></i> Power Outlets
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-plug"></i> Limited Power
+                                    </span>
+                                {% endif %}
+                                
+                                {% if cafe.has_toilet %}
+                                    <span class="badge bg-info">
+                                        <i class="fas fa-restroom"></i> Restroom
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-restroom"></i> No Restroom
+                                    </span>
+                                {% endif %}
+                                
+                                {% if cafe.can_take_calls %}
+                                    <span class="badge bg-primary">
+                                        <i class="fas fa-phone"></i> Calls Welcome
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-phone-slash"></i> Quiet Zone
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex">
+                        <a href="{{ cafe.map_url }}" class="btn btn-primary" target="_blank">
+                            <i class="fas fa-map-marked-alt"></i> View on Map
+                        </a>
+                        <a href="{{ url_for('home') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to List
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-info-circle"></i> Remote Work Score</h5>
+                </div>
+                <div class="card-body">
+                    {% set score = 0 %}
+                    {% if cafe.has_wifi %}{% set score = score + 25 %}{% endif %}
+                    {% if cafe.has_sockets %}{% set score = score + 25 %}{% endif %}
+                    {% if cafe.has_toilet %}{% set score = score + 15 %}{% endif %}
+                    {% if cafe.can_take_calls %}{% set score = score + 10 %}{% endif %}
+                    {% if cafe.seats >= 30 %}{% set score = score + 15 %}{% elif cafe.seats >= 20 %}{% set score = score + 10 %}{% else %}{% set score = score + 5 %}{% endif %}
+                    {% if cafe.coffee_price and '$2' in cafe.coffee_price %}{% set score = score + 10 %}{% elif cafe.coffee_price and '$3' in cafe.coffee_price %}{% set score = score + 5 %}{% endif %}
+                    
+                    <div class="text-center">
+                        <div class="display-4 mb-2
+                            {% if score >= 80 %}text-success
+                            {% elif score >= 60 %}text-warning  
+                            {% else %}text-danger{% endif %}">
+                            {{ score }}/100
+                        </div>
+                        <div class="progress mb-3">
+                            <div class="progress-bar 
+                                {% if score >= 80 %}bg-success
+                                {% elif score >= 60 %}bg-warning
+                                {% else %}bg-danger{% endif %}" 
+                                data-score="{{ score }}"
+                                style="width: 0%"></div>
+                        </div>
+                        
+                        {% if score >= 80 %}
+                            <span class="badge bg-success">Excellent for Remote Work</span>
+                        {% elif score >= 60 %}
+                            <span class="badge bg-warning">Good for Remote Work</span>
+                        {% else %}
+                            <span class="badge bg-danger">Basic Remote Work Setup</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5><i class="fas fa-lightbulb"></i> Tips for This Cafe</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled small">
+                        {% if not cafe.has_sockets %}
+                            <li><i class="fas fa-battery-half text-warning"></i> Bring a portable charger</li>
+                        {% endif %}
+                        {% if not cafe.can_take_calls %}
+                            <li><i class="fas fa-volume-mute text-info"></i> Use headphones for calls</li>
+                        {% endif %}
+                        {% if cafe.seats < 20 %}
+                            <li><i class="fas fa-clock text-primary"></i> Arrive early for best seats</li>
+                        {% endif %}
+                        {% if cafe.has_wifi and cafe.has_sockets %}
+                            <li><i class="fas fa-thumbs-up text-success"></i> Perfect setup for long work sessions</li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Set progress bar width from data attribute to avoid CSS linting issues
+document.addEventListener('DOMContentLoaded', function() {
+    const progressBar = document.querySelector('.progress-bar[data-score]');
+    if (progressBar) {
+        const score = progressBar.getAttribute('data-score');
+        progressBar.style.width = score + '%';
+    }
+});
+</script>
+{% endblock %}

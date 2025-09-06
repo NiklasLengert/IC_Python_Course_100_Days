@@ -1,0 +1,28 @@
+PDF to Speech Converter - Sample Document
+
+This is a sample PDF document that can be converted to speech.
+
+The PDF to Speech Converter is a powerful tool that allows users to convert any PDF document into spoken audio. This can be incredibly useful for:
+
+1. Accessibility - helping visually impaired users access written content
+2. Multitasking - listening to documents while doing other activities  
+3. Learning - some people learn better by listening rather than reading
+4. Convenience - consuming content while driving, exercising, or commuting
+
+The application features both a graphical user interface and a command-line version, giving users flexibility in how they interact with the tool.
+
+Key Features:
+- Extract text from multi-page PDF documents
+- Customizable speech rate and volume
+- Multiple voice options
+- Progress tracking during conversion
+- Ability to save speech as audio files
+- Real-time preview of extracted text
+- Pause, resume, and stop functionality
+
+Technical Implementation:
+The application uses PyPDF2 for PDF text extraction and pyttsx3 for text-to-speech conversion. The GUI is built with Tkinter, providing an intuitive interface for users of all skill levels.
+
+This sample text demonstrates the capability of the PDF to Speech Converter to handle various types of content, including paragraphs, lists, and technical information.
+
+Thank you for testing the PDF to Speech Converter!

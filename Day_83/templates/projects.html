@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Projects - My Portfolio{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1>My Projects</h1>
+        <p class="lead">Here are some of the projects I've worked on during my learning journey.</p>
+    </div>
+
+    <div class="row">
+        {% for project in projects %}
+        <div class="col-lg-6 col-md-6 mb-4">
+            <div class="card h-100 shadow">
+                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
+                    <i class="fas fa-laptop-code fa-5x text-muted"></i>
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">{{ project.title }}</h5>
+                    <p class="card-text">{{ project.description }}</p>
+                    
+                    <div class="mb-3">
+                        <h6>Technologies Used:</h6>
+                        {% for tech in project.technologies %}
+                            <span class="badge bg-primary me-1 mb-1">{{ tech }}</span>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mt-auto">
+                        <div class="d-flex gap-2">
+                            <a href="{{ url_for('project_detail', project_id=project.id) }}" 
+                               class="btn btn-primary">
+                                View Details
+                            </a>
+                            {% if project.github_link %}
+                            <a href="{{ project.github_link }}" 
+                               class="btn btn-outline-dark" 
+                               target="_blank">
+                                <i class="fab fa-github"></i> GitHub
+                            </a>
+                            {% endif %}
+                            {% if project.demo_link %}
+                            <a href="{{ project.demo_link }}" 
+                               class="btn btn-outline-success" 
+                               target="_blank">
+                                <i class="fas fa-external-link-alt"></i> Demo
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="text-center bg-light p-5 rounded">
+                <h3>More Projects Coming Soon!</h3>
+                <p class="lead">I'm always working on new projects and learning new technologies.</p>
+                <p>Check back regularly to see what I've been building, or follow me on GitHub for updates.</p>
+                <a href="https://github.com/NiklasLengert/IC_Python_Course_100_Days" class="btn btn-primary">
+                    <i class="fab fa-github"></i> Follow on GitHub
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

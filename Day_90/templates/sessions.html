@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block title %}Writing Sessions - Dangerous Writer{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-history me-2"></i>Your Writing Sessions</h2>
+                <a href="{{ url_for('home') }}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Start New Session
+                </a>
+            </div>
+            
+            {% if sessions %}
+                <div class="row">
+                    {% for session in sessions %}
+                        <div class="col-lg-6 col-xl-4 mb-4">
+                            <div class="card h-100 shadow-sm border-0">
+                                <div class="card-header d-flex justify-content-between align-items-center
+                                    {% if session.difficulty == 'extreme' %}bg-danger text-white
+                                    {% elif session.difficulty == 'hard' %}bg-warning text-dark
+                                    {% elif session.difficulty == 'normal' %}bg-primary text-white
+                                    {% else %}bg-success text-white{% endif %}">
+                                    <div>
+                                        <i class="fas fa-
+                                            {% if session.difficulty == 'extreme' %}skull
+                                            {% elif session.difficulty == 'hard' %}fire
+                                            {% elif session.difficulty == 'normal' %}pen
+                                            {% else %}leaf{% endif %} me-2"></i>
+                                        {{ session.difficulty.title() }} Mode
+                                    </div>
+                                    <small>
+                                        {% if session.completed %}
+                                            <i class="fas fa-check-circle"></i> Completed
+                                        {% else %}
+                                            <i class="fas fa-times-circle"></i> Failed
+                                        {% endif %}
+                                    </small>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row mb-3">
+                                        <div class="col-4 text-center">
+                                            <div class="fw-bold fs-5 text-primary">{{ session.word_count }}</div>
+                                            <small class="text-muted">Words</small>
+                                        </div>
+                                        <div class="col-4 text-center">
+                                            <div class="fw-bold fs-5 text-success">{{ session.char_count }}</div>
+                                            <small class="text-muted">Characters</small>
+                                        </div>
+                                        <div class="col-4 text-center">
+                                            <div class="fw-bold fs-5 text-info">
+                                                {% set minutes = session.writing_time // 60 %}
+                                                {% set seconds = session.writing_time % 60 %}
+                                                {{ minutes }}:{{ "%02d"|format(seconds) }}
+                                            </div>
+                                            <small class="text-muted">Duration</small>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="text-muted small mb-3">
+                                        <i class="fas fa-calendar me-1"></i>
+                                        {{ session.timestamp.strftime('%b %d, %Y at %I:%M %p') }}
+                                    </div>
+                                    
+                                    {% if session.content %}
+                                        <p class="text-muted small mb-3" style="max-height: 60px; overflow: hidden;">
+                                            {{ session.content[:150] }}{% if session.content|length > 150 %}...{% endif %}
+                                        </p>
+                                    {% endif %}
+                                    
+                                    <div class="d-flex justify-content-between">
+                                        <a href="{{ url_for('view_session', session_id=session.id) }}" class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-eye me-1"></i>View Full
+                                        </a>
+                                        {% if session.completed %}
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-trophy me-1"></i>Success
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-danger">
+                                                <i class="fas fa-skull me-1"></i>Lost
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="row mt-5">
+                    <div class="col-lg-8 offset-lg-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-chart-bar me-2"></i>Session Statistics</h5>
+                            </div>
+                            <div class="card-body">
+                                {% set total_sessions = sessions|length %}
+                                {% set completed_sessions = sessions|selectattr('completed')|list|length %}
+                                {% set total_words = sessions|sum(attribute='word_count') %}
+                                {% set total_time = sessions|sum(attribute='writing_time') %}
+                                {% set success_rate = (completed_sessions / total_sessions * 100)|round|int if total_sessions > 0 else 0 %}
+                                
+                                <div class="row text-center">
+                                    <div class="col-md-3">
+                                        <div class="fw-bold fs-4 text-primary">{{ total_sessions }}</div>
+                                        <small>Total Sessions</small>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="fw-bold fs-4 text-success">{{ completed_sessions }}</div>
+                                        <small>Completed</small>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="fw-bold fs-4 text-info">{{ total_words }}</div>
+                                        <small>Total Words</small>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="fw-bold fs-4 text-warning">{{ success_rate }}%</div>
+                                        <small>Success Rate</small>
+                                    </div>
+                                </div>
+                                
+                                <div class="progress mt-3">
+                                    <div class="progress-bar bg-success" data-success-rate="{{ success_rate }}" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-clipboard-list fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted">No writing sessions yet</h4>
+                    <p class="text-muted">Start your first dangerous writing session!</p>
+                    <a href="{{ url_for('home') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-fire me-2"></i>Start Writing
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const progressBar = document.querySelector('.progress-bar[data-success-rate]');
+    if (progressBar) {
+        const successRate = progressBar.getAttribute('data-success-rate');
+        setTimeout(() => {
+            progressBar.style.width = successRate + '%';
+        }, 100);
+    }
+});
+</script>
+{% endblock %}

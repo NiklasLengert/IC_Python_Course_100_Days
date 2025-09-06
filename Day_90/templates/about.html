@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block title %}About - Dangerous Writer{% endblock %}
+
+{% block content %}
+<div class="hero-gradient text-white py-5">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold mb-4">
+            <i class="fas fa-fire me-3"></i>About The Most Dangerous Writing App
+        </h1>
+        <p class="lead fs-5">
+            The writing app that forces you to keep writing or lose everything
+        </p>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-5">
+                    <h3 class="fw-bold mb-4">How It Works</h3>
+                    
+                    <div class="mb-4">
+                        <h5><i class="fas fa-play text-primary me-2"></i>Choose Your Challenge</h5>
+                        <p class="text-muted">
+                            Select from four difficulty levels, each with different time limits:
+                        </p>
+                        <ul class="list-unstyled ms-3">
+                            <li><i class="fas fa-leaf text-success me-2"></i><strong>Easy:</strong> 10 seconds of thinking time</li>
+                            <li><i class="fas fa-pen text-primary me-2"></i><strong>Normal:</strong> 5 seconds of thinking time</li>
+                            <li><i class="fas fa-fire text-warning me-2"></i><strong>Hard:</strong> 3 seconds of thinking time</li>
+                            <li><i class="fas fa-skull text-danger me-2"></i><strong>Extreme:</strong> 1.5 seconds of thinking time</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5><i class="fas fa-keyboard text-success me-2"></i>Start Writing</h5>
+                        <p class="text-muted">
+                            Once you start typing, a countdown timer begins. The timer resets every time you type a character, 
+                            but if you stop typing for longer than your selected time limit, everything disappears forever.
+                        </p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5><i class="fas fa-exclamation-triangle text-warning me-2"></i>Don't Stop!</h5>
+                        <p class="text-muted">
+                            The app monitors your typing activity continuously. Visual warnings appear when you're running 
+                            out of time, with the interface changing colors to indicate danger levels.
+                        </p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5><i class="fas fa-save text-info me-2"></i>Save Your Work</h5>
+                        <p class="text-muted">
+                            You can save your writing session at any time by clicking the Save button. Successfully 
+                            completed sessions are automatically tracked with detailed statistics.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm border-0 mt-4">
+                <div class="card-body p-5">
+                    <h3 class="fw-bold mb-4">Why Use This App?</h3>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-brain text-primary fa-2x me-3 mt-1"></i>
+                                <div>
+                                    <h6 class="fw-bold">Overcome Writer's Block</h6>
+                                    <p class="text-muted small">
+                                        The pressure to keep writing forces your brain to bypass the internal editor 
+                                        that often causes writer's block.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-4">
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-tachometer-alt text-success fa-2x me-3 mt-1"></i>
+                                <div>
+                                    <h6 class="fw-bold">Increase Writing Speed</h6>
+                                    <p class="text-muted small">
+                                        Regular practice with time pressure naturally improves your writing speed and fluency.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-4">
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-lightbulb text-warning fa-2x me-3 mt-1"></i>
+                                <div>
+                                    <h6 class="fw-bold">Unlock Creativity</h6>
+                                    <p class="text-muted small">
+                                        When you can't stop to judge your words, unexpected creative ideas often emerge.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-4">
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-chart-line text-info fa-2x me-3 mt-1"></i>
+                                <div>
+                                    <h6 class="fw-bold">Track Progress</h6>
+                                    <p class="text-muted small">
+                                        Monitor your writing statistics over time to see improvements in speed and endurance.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm border-0 mt-4">
+                <div class="card-body p-5 text-center">
+                    <h3 class="fw-bold mb-4">Tips for Success</h3>
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <i class="fas fa-clock text-primary fa-3x mb-3"></i>
+                            <h6 class="fw-bold">Start with Easy Mode</h6>
+                            <p class="text-muted small">Build confidence with the 10-second timer before attempting harder challenges.</p>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <i class="fas fa-pen-fancy text-success fa-3x mb-3"></i>
+                            <h6 class="fw-bold">Don't Edit While Writing</h6>
+                            <p class="text-muted small">Focus on getting ideas down first. Editing can wait until after you save.</p>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <i class="fas fa-target text-warning fa-3x mb-3"></i>
+                            <h6 class="fw-bold">Set Small Goals</h6>
+                            <p class="text-muted small">Aim for 100 words at first, then gradually increase your target.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-5">
+                        <a href="{{ url_for('home') }}" class="btn btn-primary btn-lg me-3">
+                            <i class="fas fa-fire me-2"></i>Start Writing Now
+                        </a>
+                        <a href="{{ url_for('sessions') }}" class="btn btn-outline-secondary btn-lg">
+                            <i class="fas fa-history me-2"></i>View Your Progress
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Contact - My Portfolio{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <h1 class="mb-4">Get In Touch</h1>
+            <p class="lead">I'd love to hear from you! Whether you have a question about my projects, want to discuss opportunities, or just want to say hello.</p>
+
+            <form method="POST" class="mt-4">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="name" class="form-label">Your Name</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="email" class="form-label">Your Email</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="subject" class="form-label">Subject</label>
+                    <input type="text" class="form-control" id="subject" name="subject" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="message" class="form-label">Message</label>
+                    <textarea class="form-control" id="message" name="message" rows="6" required></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="fas fa-paper-plane"></i> Send Message
+                </button>
+            </form>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Contact Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6><i class="fas fa-envelope text-primary"></i> Email</h6>
+                        <p>niklas.lengert@example.com</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6><i class="fas fa-map-marker-alt text-primary"></i> Location</h6>
+                        <p>Berlin, Germany</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6><i class="fas fa-clock text-primary"></i> Response Time</h6>
+                        <p>Usually within 24 hours</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5>Connect Online</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="https://github.com/NiklasLengert" class="btn btn-outline-dark" target="_blank">
+                            <i class="fab fa-github"></i> GitHub
+                        </a>
+                        <a href="https://www.linkedin.com/in/niklas-lengert-a351a7173" class="btn btn-outline-primary" target="_blank">
+                            <i class="fab fa-linkedin"></i> LinkedIn
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5>Let's Discuss</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check text-success me-2"></i>Project collaborations</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Learning opportunities</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Technical questions</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Career advice</li>
+                        <li><i class="fas fa-check text-success me-2"></i>General networking</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

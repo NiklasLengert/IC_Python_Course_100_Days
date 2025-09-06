@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}Session {{ session.id }} - Dangerous Writer{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+            <div class="card shadow-sm border-0">
+                <div class="card-header d-flex justify-content-between align-items-center
+                    {% if session.difficulty == 'extreme' %}bg-danger text-white
+                    {% elif session.difficulty == 'hard' %}bg-warning text-dark
+                    {% elif session.difficulty == 'normal' %}bg-primary text-white
+                    {% else %}bg-success text-white{% endif %}">
+                    <div>
+                        <h5 class="mb-0">
+                            <i class="fas fa-
+                                {% if session.difficulty == 'extreme' %}skull
+                                {% elif session.difficulty == 'hard' %}fire
+                                {% elif session.difficulty == 'normal' %}pen
+                                {% else %}leaf{% endif %} me-2"></i>
+                            {{ session.difficulty.title() }} Mode Session
+                        </h5>
+                        <small>{{ session.timestamp.strftime('%B %d, %Y at %I:%M %p') }}</small>
+                    </div>
+                    <div class="text-end">
+                        {% if session.completed %}
+                            <i class="fas fa-check-circle fa-2x"></i>
+                        {% else %}
+                            <i class="fas fa-times-circle fa-2x"></i>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-3 text-center">
+                            <div class="fw-bold fs-3 text-primary">{{ session.word_count }}</div>
+                            <div class="text-muted">Words Written</div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="fw-bold fs-3 text-success">{{ session.char_count }}</div>
+                            <div class="text-muted">Characters</div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="fw-bold fs-3 text-info">
+                                {% set minutes = session.writing_time // 60 %}
+                                {% set seconds = session.writing_time % 60 %}
+                                {{ minutes }}:{{ "%02d"|format(seconds) }}
+                            </div>
+                            <div class="text-muted">Duration</div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="fw-bold fs-3 text-warning">
+                                {{ (session.word_count / (session.writing_time / 60))|round|int if session.writing_time > 0 else 0 }}
+                            </div>
+                            <div class="text-muted">WPM</div>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="mb-4">
+                        <h6 class="fw-bold mb-3">
+                            <i class="fas fa-file-alt me-2"></i>Written Content
+                            {% if session.completed %}
+                                <span class="badge bg-success ms-2">Saved Successfully</span>
+                            {% else %}
+                                <span class="badge bg-danger ms-2">Session Failed</span>
+                            {% endif %}
+                        </h6>
+                        
+                        {% if session.content %}
+                            <div class="border rounded p-4 bg-light" style="max-height: 400px; overflow-y: auto;">
+                                <div style="white-space: pre-wrap; font-size: 1.1rem; line-height: 1.6;">{{ session.content }}</div>
+                            </div>
+                        {% else %}
+                            <div class="text-center text-muted py-4">
+                                <i class="fas fa-file-slash fa-3x mb-3"></i>
+                                <p>No content was saved for this session.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="fw-bold">Session Details</h6>
+                                    <div class="small">
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span>Difficulty:</span>
+                                            <span class="fw-bold">{{ session.difficulty.title() }}</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span>Status:</span>
+                                            <span class="fw-bold {{ 'text-success' if session.completed else 'text-danger' }}">
+                                                {{ 'Completed' if session.completed else 'Failed' }}
+                                            </span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span>Session ID:</span>
+                                            <span class="fw-bold">#{{ session.id }}</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <span>Date:</span>
+                                            <span class="fw-bold">{{ session.timestamp.strftime('%m/%d/%Y') }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="fw-bold">Performance Analysis</h6>
+                                    <div class="small">
+                                        {% set avg_word_length = (session.char_count / session.word_count)|round(1) if session.word_count > 0 else 0 %}
+                                        {% set chars_per_second = (session.char_count / session.writing_time)|round(1) if session.writing_time > 0 else 0 %}
+                                        
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span>Avg Word Length:</span>
+                                            <span class="fw-bold">{{ avg_word_length }} chars</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span>Typing Speed:</span>
+                                            <span class="fw-bold">{{ chars_per_second }} chars/sec</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span>Words per Minute:</span>
+                                            <span class="fw-bold">{{ (session.word_count / (session.writing_time / 60))|round|int if session.writing_time > 0 else 0 }} WPM</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <span>Efficiency:</span>
+                                            <span class="fw-bold {{ 'text-success' if session.completed else 'text-warning' }}">
+                                                {{ 'Excellent' if session.completed else 'Incomplete' }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{{ url_for('sessions') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Sessions
+                        </a>
+                        <div>
+                            <a href="{{ url_for('write', difficulty=session.difficulty) }}" class="btn btn-primary">
+                                <i class="fas fa-redo me-2"></i>Try {{ session.difficulty.title() }} Again
+                            </a>
+                            <a href="{{ url_for('home') }}" class="btn btn-success">
+                                <i class="fas fa-fire me-2"></i>New Challenge
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

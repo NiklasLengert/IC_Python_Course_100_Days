@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero-gradient text-white py-5">
+    <div class="container text-center">
+        <div class="fade-in">
+            <h1 class="display-3 fw-bold mb-4">
+                <i class="fas fa-fire me-3"></i>The Most Dangerous Writing App
+            </h1>
+            <p class="lead fs-4 mb-5">
+                Don't stop typing, or all your work will be lost forever
+            </p>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="alert alert-warning bg-warning text-dark border-0 mb-4">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Warning:</strong> If you stop typing for too long, everything disappears!
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <h2 class="text-center mb-5">Choose Your Challenge</h2>
+            
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center p-4 safe-zone text-white">
+                            <i class="fas fa-leaf fa-3x mb-3"></i>
+                            <h5 class="card-title fw-bold">Easy Mode</h5>
+                            <p class="card-text">10 seconds to think</p>
+                            <p class="small mb-3">Perfect for beginners and brainstorming</p>
+                            <a href="{{ url_for('write', difficulty='easy') }}" class="btn btn-light btn-lg">
+                                <i class="fas fa-play me-2"></i>Start Easy
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center p-4 hero-gradient text-white">
+                            <i class="fas fa-pen fa-3x mb-3"></i>
+                            <h5 class="card-title fw-bold">Normal Mode</h5>
+                            <p class="card-text">5 seconds to think</p>
+                            <p class="small mb-3">The classic experience</p>
+                            <a href="{{ url_for('write', difficulty='normal') }}" class="btn btn-light btn-lg">
+                                <i class="fas fa-play me-2"></i>Start Normal
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center p-4 warning-zone text-white">
+                            <i class="fas fa-fire fa-3x mb-3"></i>
+                            <h5 class="card-title fw-bold">Hard Mode</h5>
+                            <p class="card-text">3 seconds to think</p>
+                            <p class="small mb-3">For experienced writers</p>
+                            <a href="{{ url_for('write', difficulty='hard') }}" class="btn btn-light btn-lg">
+                                <i class="fas fa-play me-2"></i>Start Hard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center p-4 danger-zone text-white">
+                            <i class="fas fa-skull fa-3x mb-3"></i>
+                            <h5 class="card-title fw-bold">Extreme Mode</h5>
+                            <p class="card-text">1.5 seconds to think</p>
+                            <p class="small mb-3">Only for the brave</p>
+                            <a href="{{ url_for('write', difficulty='extreme') }}" class="btn btn-light btn-lg">
+                                <i class="fas fa-play me-2"></i>Start Extreme
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="bg-dark text-white py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h3 class="fw-bold mb-4">How it works</h3>
+                <div class="d-flex align-items-start mb-3">
+                    <i class="fas fa-keyboard text-primary me-3 mt-1"></i>
+                    <div>
+                        <h6 class="fw-bold">Start typing</h6>
+                        <p class="text-muted mb-0">Choose your difficulty and begin writing immediately</p>
+                    </div>
+                </div>
+                <div class="d-flex align-items-start mb-3">
+                    <i class="fas fa-clock text-warning me-3 mt-1"></i>
+                    <div>
+                        <h6 class="fw-bold">Keep the flow</h6>
+                        <p class="text-muted mb-0">Don't stop typing for more than your time limit</p>
+                    </div>
+                </div>
+                <div class="d-flex align-items-start mb-3">
+                    <i class="fas fa-exclamation-triangle text-danger me-3 mt-1"></i>
+                    <div>
+                        <h6 class="fw-bold">Don't stop!</h6>
+                        <p class="text-muted mb-0">If you pause too long, everything disappears forever</p>
+                    </div>
+                </div>
+                <div class="d-flex align-items-start">
+                    <i class="fas fa-save text-success me-3 mt-1"></i>
+                    <div>
+                        <h6 class="fw-bold">Save your work</h6>
+                        <p class="text-muted mb-0">Successfully complete sessions are saved automatically</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <i class="fas fa-fire-flame-curved text-danger" style="font-size: 10rem; opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 text-center">
+            <h3 class="fw-bold mb-4">Why Use The Most Dangerous Writing App?</h3>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <i class="fas fa-brain text-primary fa-3x mb-3"></i>
+                    <h5>Beat Writer's Block</h5>
+                    <p class="text-muted">Force yourself to keep writing without overthinking</p>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <i class="fas fa-tachometer-alt text-success fa-3x mb-3"></i>
+                    <h5>Increase Productivity</h5>
+                    <p class="text-muted">Write faster and more efficiently under pressure</p>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <i class="fas fa-lightbulb text-warning fa-3x mb-3"></i>
+                    <h5>Unlock Creativity</h5>
+                    <p class="text-muted">Discover new ideas when you can't stop to judge</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

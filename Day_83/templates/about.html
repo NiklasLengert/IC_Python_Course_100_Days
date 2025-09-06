@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}About - My Portfolio{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-4 mb-4">
+            <div class="text-center">
+                <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                     style="width: 200px; height: 200px;">
+                    <i class="fas fa-user fa-5x text-white"></i>
+                </div>
+                <h3>Niklas Lengert</h3>
+                <p class="text-muted">Master's Student in Computer Science</p>
+                <div class="social-links">
+                    <a href="https://github.com/NiklasLengert" class="btn btn-outline-dark me-2">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/in/niklas-lengert-a351a7173" class="btn btn-outline-dark me-2">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                    <a href="mailto:niklas.lengert@example.com" class="btn btn-outline-dark">
+                        <i class="fas fa-envelope"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-8">
+            <h1 class="mb-4">About Me</h1>
+            
+            <div class="mb-4">
+                <h3>My Story</h3>
+                <p>
+                    I'm currently pursuing my Master's degree in Computer Science at HTW Berlin and have developed 
+                    a passion for programming and technology. My journey started with curiosity about 
+                    how websites and applications work, which led me to dive deep into programming.
+                </p>
+                <p>
+                    Throughout my studies, I've worked on various projects ranging from simple console 
+                    applications to web development with Flask. I enjoy the problem-solving aspect 
+                    of programming and the satisfaction of building something that works.
+                </p>
+                <p>
+                    When I'm not coding, I enjoy learning about new technologies, reading tech blogs, 
+                    and working on personal projects. I believe in continuous learning and always 
+                    strive to improve my skills through hands-on practice.
+                </p>
+            </div>
+
+            <div class="mb-4">
+                <h3>Education</h3>
+                <div class="border-start border-primary ps-3">
+                    <h5>Master's Degree in Computer Science</h5>
+                    <p class="text-muted">HTW Berlin • 2024 - Present</p>
+                    <p>Focusing on software development, algorithms, and web technologies.</p>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <h3>What I'm Learning</h3>
+                <ul>
+                    <li>Advanced Python programming techniques</li>
+                    <li>Web development with Flask and Django</li>
+                    <li>Database design and management</li>
+                    <li>API development and integration</li>
+                    <li>Software engineering best practices</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-12">
+            <h2 class="text-center mb-4">My Skills</h2>
+            <div class="row">
+                {% for skill in skills %}
+                <div class="col-lg-6 col-md-6 mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="fw-bold">{{ skill.name }}</span>
+                        <span class="text-muted">{{ skill.level }}%</span>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                        <div class="progress-bar bg-primary" 
+                             data-skill-level="{{ skill.level }}"
+                             role="progressbar">
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-12 text-center">
+            <h3>Interested in working together?</h3>
+            <p class="lead">I'm always open to discussing new opportunities and interesting projects.</p>
+            <a href="{{ url_for('contact') }}" class="btn btn-primary btn-lg">Get In Touch</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
