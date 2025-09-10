@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-lg">
+                <div class="card-body p-5">
+                    <div class="text-center mb-5">
+                        <h1 class="display-5 fw-bold text-gradient mb-3">Extract Color Palettes</h1>
+                        <p class="lead text-muted">Upload any image and discover its dominant colors, harmonies, and visual insights.</p>
+                    </div>
+
+                    <form id="uploadForm" method="POST" enctype="multipart/form-data">
+                        <div class="upload-zone" id="uploadZone">
+                            <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                            <h4 class="text-muted mb-3">Drop your image here</h4>
+                            <p class="text-muted mb-3">or click to browse</p>
+                            <input type="file" name="image" id="imageInput" accept="image/*" class="d-none" required>
+                            <button type="button" class="btn btn-outline-primary btn-lg" onclick="document.getElementById('imageInput').click()">
+                                <i class="fas fa-folder-open me-2"></i>Choose Image
+                            </button>
+                        </div>
+
+                        <div id="previewSection" class="mt-4 d-none">
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <img id="imagePreview" class="image-preview" alt="Preview">
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card color-info-card p-3">
+                                        <h6 class="text-white mb-2">Image Details</h6>
+                                        <p id="imageDetails" class="text-light small mb-3"></p>
+                                        <div class="mb-3">
+                                            <label class="form-label text-white">Number of Colors:</label>
+                                            <select name="num_colors" class="form-select">
+                                                <option value="3">3 Colors</option>
+                                                <option value="5" selected>5 Colors</option>
+                                                <option value="8">8 Colors</option>
+                                                <option value="10">10 Colors</option>
+                                            </select>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                                            <i class="fas fa-palette me-2"></i>Analyze Colors
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="row mt-5">
+                <div class="col-md-4">
+                    <div class="card border-0 shadow">
+                        <div class="card-body text-center p-4">
+                            <i class="fas fa-palette fa-2x text-primary mb-3"></i>
+                            <h5>Dominant Colors</h5>
+                            <p class="text-muted small">Extract the most prominent colors from any image using advanced clustering algorithms.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow">
+                        <div class="card-body text-center p-4">
+                            <i class="fas fa-adjust fa-2x text-success mb-3"></i>
+                            <h5>Color Harmonies</h5>
+                            <p class="text-muted small">Discover complementary, triadic, and analogous color schemes for design inspiration.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow">
+                        <div class="card-body text-center p-4">
+                            <i class="fas fa-chart-bar fa-2x text-warning mb-3"></i>
+                            <h5>Color Analysis</h5>
+                            <p class="text-muted small">Get detailed color information including names, values, and accessibility metrics.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const uploadZone = document.getElementById('uploadZone');
+    const imageInput = document.getElementById('imageInput');
+    const previewSection = document.getElementById('previewSection');
+    const imagePreview = document.getElementById('imagePreview');
+    const imageDetails = document.getElementById('imageDetails');
+
+    uploadZone.addEventListener('click', () => {
+        imageInput.click();
+    });
+
+    uploadZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadZone.classList.add('dragover');
+    });
+
+    uploadZone.addEventListener('dragleave', () => {
+        uploadZone.classList.remove('dragover');
+    });
+
+    uploadZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadZone.classList.remove('dragover');
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            imageInput.files = files;
+            handleFileSelect(files[0]);
+        }
+    });
+
+    imageInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            handleFileSelect(e.target.files[0]);
+        }
+    });
+
+    function handleFileSelect(file) {
+        if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                imagePreview.src = e.target.result;
+                const sizeKB = (file.size / 1024).toFixed(2);
+                imageDetails.textContent = `${file.name} (${sizeKB} KB)`;
+                previewSection.classList.remove('d-none');
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    document.getElementById('uploadForm').addEventListener('submit', function(e) {
+        const submitBtn = this.querySelector('button[type="submit"]');
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Analyzing...';
+        submitBtn.disabled = true;
+    });
+</script>
+{% endblock %}

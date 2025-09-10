@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card mb-5">
+                <div class="card-body p-5 text-center">
+                    <h1 class="display-4 pokemon-font gradient-text mb-4">Pokédex Web Scraper</h1>
+                    <p class="lead mb-4">Scrape comprehensive data for the first 151 Pokémon from PokémonDB and build a detailed CSV dataset.</p>
+                    
+                    <div id="scraping-controls">
+                        <form id="scraping-form" class="row g-3 justify-content-center mb-4">
+                            <div class="col-md-4">
+                                <label class="form-label">Pokémon Limit</label>
+                                <select name="limit" class="form-select">
+                                    <option value="10">10 Pokémon (Test)</option>
+                                    <option value="25">25 Pokémon</option>
+                                    <option value="50">50 Pokémon</option>
+                                    <option value="151" selected>151 Pokémon (Full)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Concurrent Workers</label>
+                                <select name="max_workers" class="form-select">
+                                    <option value="3">3 Workers</option>
+                                    <option value="5" selected>5 Workers</option>
+                                    <option value="8">8 Workers</option>
+                                    <option value="10">10 Workers</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary btn-lg w-100">
+                                    <i class="fas fa-play me-2"></i>Start Scraping
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="progress-section" class="d-none">
+                        <div class="row justify-content-center mb-4">
+                            <div class="col-md-6 text-center">
+                                <div class="d-flex justify-content-center mb-3">
+                                    <svg class="progress-ring" viewBox="0 0 120 120">
+                                        <circle class="progress-bg" cx="60" cy="60" r="50"></circle>
+                                        <circle id="progress-circle" class="progress-fill" cx="60" cy="60" r="50" 
+                                                stroke-dasharray="314" stroke-dashoffset="314"></circle>
+                                    </svg>
+                                </div>
+                                <h4 id="progress-text" class="pokemon-font">0 / 151</h4>
+                                <p id="progress-message" class="text-muted">Initializing...</p>
+                                <div class="loading-pokeball mx-auto mb-3"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="completion-section" class="d-none">
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle fa-2x mb-3"></i>
+                            <h4>Scraping Complete!</h4>
+                            <p>Successfully scraped Pokémon data. You can now view the results.</p>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <a href="{{ url_for('view_data') }}" class="btn btn-outline-primary btn-lg w-100">
+                                    <i class="fas fa-table me-2"></i>View Data
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <a href="{{ url_for('download_csv') }}" class="btn btn-success btn-lg w-100">
+                                    <i class="fas fa-download me-2"></i>Download CSV
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card card-glass text-white h-100">
+                        <div class="card-body text-center p-4">
+                            <i class="fas fa-spider fa-3x mb-3"></i>
+                            <h5>Advanced Scraping</h5>
+                            <p class="small">Multi-threaded web scraping with rate limiting and error handling for efficient data collection.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card card-glass text-white h-100">
+                        <div class="card-body text-center p-4">
+                            <i class="fas fa-database fa-3x mb-3"></i>
+                            <h5>Rich Dataset</h5>
+                            <p class="small">Comprehensive data including stats, types, abilities, evolution chains, and location information.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card card-glass text-white h-100">
+                        <div class="card-body text-center p-4">
+                            <i class="fas fa-chart-line fa-3x mb-3"></i>
+                            <h5>Data Analysis</h5>
+                            <p class="small">Statistical analysis and visualizations of Pokémon characteristics and distributions.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let progressInterval;
+    
+    document.getElementById('scraping-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const scrapingControls = document.getElementById('scraping-controls');
+        const progressSection = document.getElementById('progress-section');
+        const completionSection = document.getElementById('completion-section');
+        
+        scrapingControls.classList.add('d-none');
+        progressSection.classList.remove('d-none');
+        completionSection.classList.add('d-none');
+        
+        try {
+            const response = await fetch('/start_scraping', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const result = await response.json();
+            
+            if (result.status === 'started') {
+                progressInterval = setInterval(updateProgress, 1000);
+            } else {
+                throw new Error(result.error || 'Failed to start scraping');
+            }
+        } catch (error) {
+            alert('Error starting scraping: ' + error.message);
+            scrapingControls.classList.remove('d-none');
+            progressSection.classList.add('d-none');
+        }
+    });
+    
+    async function updateProgress() {
+        try {
+            const response = await fetch('/progress');
+            const progress = await response.json();
+            
+            const progressText = document.getElementById('progress-text');
+            const progressMessage = document.getElementById('progress-message');
+            const progressCircle = document.getElementById('progress-circle');
+            
+            progressText.textContent = `${progress.current} / ${progress.total}`;
+            progressMessage.textContent = progress.message;
+            
+            const percentage = progress.total > 0 ? (progress.current / progress.total) * 100 : 0;
+            const circumference = 314;
+            const offset = circumference - (percentage / 100) * circumference;
+            progressCircle.style.strokeDashoffset = offset;
+            
+            if (progress.status === 'complete') {
+                clearInterval(progressInterval);
+                document.getElementById('progress-section').classList.add('d-none');
+                document.getElementById('completion-section').classList.remove('d-none');
+            } else if (progress.status === 'error') {
+                clearInterval(progressInterval);
+                alert('Scraping error: ' + progress.message);
+                document.getElementById('scraping-controls').classList.remove('d-none');
+                document.getElementById('progress-section').classList.add('d-none');
+            }
+        } catch (error) {
+            console.error('Error updating progress:', error);
+        }
+    }
+    
+    window.addEventListener('beforeunload', function() {
+        if (progressInterval) {
+            clearInterval(progressInterval);
+        }
+    });
+</script>
+{% endblock %}

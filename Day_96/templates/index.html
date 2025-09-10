@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Steam Game Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .search-section {
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            background: white;
+            color: #333;
+        }
+        
+        .search-btn {
+            padding: 15px 30px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .search-btn:hover {
+            background: #45a049;
+        }
+        
+        .search-results {
+            display: none;
+        }
+        
+        .game-card {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .game-card:hover {
+            background: rgba(255,255,255,0.2);
+            border-color: #4CAF50;
+            transform: translateY(-2px);
+        }
+        
+        .game-image {
+            width: 92px;
+            height: 35px;
+            border-radius: 5px;
+            object-fit: cover;
+            background: rgba(255,255,255,0.1);
+            flex-shrink: 0;
+        }
+        
+        .game-image:error,
+        .game-image[src=""] {
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255,255,255,0.6);
+            font-size: 1.5em;
+        }
+        
+        .game-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .game-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .game-id {
+            opacity: 0.7;
+            font-size: 0.9em;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .feature-card {
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .feature-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+        
+        .feature-title {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+        
+        .feature-desc {
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            opacity: 0.7;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 20px;
+            opacity: 0.7;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .search-box {
+                flex-direction: column;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎮 Steam Game Tracker</h1>
+            <p>Track game prices, reviews, and player statistics in real-time</p>
+        </div>
+        
+        <div class="search-section">
+            <div class="search-box">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search for Steam games..." />
+                <button class="search-btn" onclick="searchGames()">Search Games</button>
+            </div>
+            
+            <div class="search-results" id="searchResults">
+            </div>
+        </div>
+        
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">💰</div>
+                <div class="feature-title">Price Tracking</div>
+                <div class="feature-desc">Monitor current prices, discounts, and price history for your favorite games.</div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <div class="feature-title">Player Statistics</div>
+                <div class="feature-desc">View real-time player counts and game popularity metrics.</div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">⭐</div>
+                <div class="feature-title">Review Analysis</div>
+                <div class="feature-desc">Get insights from user reviews and ratings to make informed decisions.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let searchTimeout;
+        
+        document.getElementById('searchInput').addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            const query = this.value.trim();
+            
+            if (query.length > 2) {
+                searchTimeout = setTimeout(() => searchGames(), 500);
+            } else {
+                hideResults();
+            }
+        });
+        
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchGames();
+            }
+        });
+        
+        function searchGames() {
+            const query = document.getElementById('searchInput').value.trim();
+            const resultsDiv = document.getElementById('searchResults');
+            
+            if (!query) {
+                hideResults();
+                return;
+            }
+            
+            resultsDiv.style.display = 'block';
+            resultsDiv.innerHTML = '<div class="loading">🔍 Searching Steam games...</div>';
+            
+            fetch(`/search?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(games => {
+                    if (games.length === 0) {
+                        resultsDiv.innerHTML = '<div class="no-results">No games found. Try a different search term.</div>';
+                    } else {
+                        resultsDiv.innerHTML = games.map(game => `
+                            <div class="game-card" onclick="viewGame(${game.appid})">
+                                <img src="${game.image}" alt="${game.name}" class="game-image" 
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="game-image" style="display:none;">🎮</div>
+                                <div class="game-info">
+                                    <div class="game-name" title="${game.name}">${game.name}</div>
+                                    <div class="game-id">App ID: ${game.appid}</div>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                })
+                .catch(error => {
+                    console.error('Search error:', error);
+                    resultsDiv.innerHTML = '<div class="no-results">Search error occurred. Please try again.</div>';
+                });
+        }
+        
+        function hideResults() {
+            document.getElementById('searchResults').style.display = 'none';
+        }
+        
+        function viewGame(appId) {
+            window.location.href = `/game/${appId}`;
+        }
+    </script>
+</body>
+</html>

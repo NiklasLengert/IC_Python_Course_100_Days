@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block title %}About - {{ super() }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-lg">
+                <div class="card-body p-5">
+                    <div class="text-center mb-5">
+                        <i class="fas fa-palette fa-4x text-gradient mb-3"></i>
+                        <h1 class="display-4 fw-bold text-gradient">About Color Extractor</h1>
+                        <p class="lead text-muted">Discover the science behind color analysis</p>
+                    </div>
+
+                    <div class="row mb-5">
+                        <div class="col-md-12">
+                            <h3 class="mb-4">How It Works</h3>
+                            <div class="row">
+                                <div class="col-md-4 mb-4">
+                                    <div class="text-center">
+                                        <div class="gradient-bg rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                            <i class="fas fa-upload fa-2x text-white"></i>
+                                        </div>
+                                        <h5>Upload Image</h5>
+                                        <p class="text-muted small">Upload any image format and our system will process it for color analysis.</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-4">
+                                    <div class="text-center">
+                                        <div class="gradient-bg rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                            <i class="fas fa-cogs fa-2x text-white"></i>
+                                        </div>
+                                        <h5>K-Means Analysis</h5>
+                                        <p class="text-muted small">Advanced machine learning algorithms identify dominant colors using clustering techniques.</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-4">
+                                    <div class="text-center">
+                                        <div class="gradient-bg rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                            <i class="fas fa-chart-pie fa-2x text-white"></i>
+                                        </div>
+                                        <h5>Color Insights</h5>
+                                        <p class="text-muted small">Get detailed color information, harmonies, and accessibility metrics.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-5">
+                        <div class="col-md-6">
+                            <h4 class="mb-3">Technical Features</h4>
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    K-Means clustering for accurate color extraction
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    Color name identification using webcolors library
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    Color harmony generation (complementary, triadic, analogous)
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    Luminance and accessibility calculations
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    HSV color space conversions
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    Color temperature analysis (warm/cool)
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h4 class="mb-3">Supported Formats</h4>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="card border-0 bg-light mb-2">
+                                        <div class="card-body text-center py-2">
+                                            <i class="fas fa-file-image text-primary me-2"></i>JPEG
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="card border-0 bg-light mb-2">
+                                        <div class="card-body text-center py-2">
+                                            <i class="fas fa-file-image text-primary me-2"></i>PNG
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="card border-0 bg-light mb-2">
+                                        <div class="card-body text-center py-2">
+                                            <i class="fas fa-file-image text-primary me-2"></i>GIF
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="card border-0 bg-light mb-2">
+                                        <div class="card-body text-center py-2">
+                                            <i class="fas fa-file-image text-primary me-2"></i>WebP
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card color-info-card mb-5">
+                        <div class="card-body p-4">
+                            <h4 class="text-white mb-3">The Science Behind Color Analysis</h4>
+                            <p class="text-light mb-3">
+                                Our color extraction system uses K-means clustering, a machine learning algorithm that groups similar colors together. 
+                                The algorithm analyzes every pixel in your image and identifies the most representative colors based on their frequency and similarity.
+                            </p>
+                            <p class="text-light mb-0">
+                                We then apply color theory principles to generate harmonious color schemes and calculate important metrics like 
+                                luminance for accessibility, color temperature for mood analysis, and provide human-readable color names 
+                                for better understanding.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="card border-0 shadow h-100">
+                                <div class="card-body text-center p-4">
+                                    <i class="fas fa-lightbulb fa-3x text-warning mb-3"></i>
+                                    <h5>Use Cases</h5>
+                                    <ul class="list-unstyled text-muted small text-start">
+                                        <li class="mb-2">• Web design and branding</li>
+                                        <li class="mb-2">• Interior design inspiration</li>
+                                        <li class="mb-2">• Art and creative projects</li>
+                                        <li class="mb-2">• Photography analysis</li>
+                                        <li class="mb-2">• Accessibility testing</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="card border-0 shadow h-100">
+                                <div class="card-body text-center p-4">
+                                    <i class="fas fa-question-circle fa-3x text-info mb-3"></i>
+                                    <h5>Tips for Best Results</h5>
+                                    <ul class="list-unstyled text-muted small text-start">
+                                        <li class="mb-2">• Use high-quality images</li>
+                                        <li class="mb-2">• Avoid heavily compressed files</li>
+                                        <li class="mb-2">• Try different color counts</li>
+                                        <li class="mb-2">• Experiment with various image types</li>
+                                        <li class="mb-2">• Consider image complexity</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-5">
+                        <h4 class="mb-3">Ready to Explore Colors?</h4>
+                        <a href="{{ url_for('home') }}" class="btn btn-primary btn-lg me-3">
+                            <i class="fas fa-palette me-2"></i>Start Analyzing
+                        </a>
+                        <a href="{{ url_for('gallery') }}" class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-images me-2"></i>View Gallery
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

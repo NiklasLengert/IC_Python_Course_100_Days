@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero">
+    <h1>TechShop</h1>
+    <p>Premium technology products at competitive prices</p>
+</div>
+
+<div class="products-grid">
+    {% for product in products %}
+        <div class="product-card">
+            <img src="{{ product[4] }}" alt="{{ product[1] }}" class="product-image">
+            <div class="product-info">
+                <h3 class="product-name">{{ product[1] }}</h3>
+                <p class="product-description">{{ product[2] }}</p>
+                <div class="product-price">${{ "%.2f"|format(product[3]) }}</div>
+                <div class="product-stock">Stock: {{ product[5] }}</div>
+                {% if product[5] > 0 %}
+                    <a href="{{ url_for('add_to_cart', product_id=product[0]) }}" class="btn btn-success">Add to Cart</a>
+                {% else %}
+                    <button class="btn" disabled>Out of Stock</button>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<style>
+    .hero {
+        text-align: center;
+        padding: 3rem 0;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 10px;
+        margin-bottom: 3rem;
+    }
+    
+    .hero h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+    
+    .hero p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+    }
+    
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+    
+    .product-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+        overflow: hidden;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    .product-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        background: #f8f9fa;
+        display: block;
+        border-radius: 8px;
+    }
+    
+    .product-info {
+        padding: 1.5rem;
+    }
+    
+    .product-name {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        color: #2c3e50;
+    }
+    
+    .product-description {
+        color: #666;
+        margin-bottom: 1rem;
+        line-height: 1.4;
+    }
+    
+    .product-price {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #27ae60;
+        margin-bottom: 0.5rem;
+    }
+    
+    .product-stock {
+        font-size: 0.9rem;
+        color: #666;
+        margin-bottom: 1rem;
+    }
+    
+    @media (max-width: 768px) {
+        .hero h1 {
+            font-size: 2rem;
+        }
+        
+        .products-grid {
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+    }
+</style>
+{% endblock %}

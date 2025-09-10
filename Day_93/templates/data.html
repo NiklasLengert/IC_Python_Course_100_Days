@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+
+{% block title %}Pokémon Data - {{ super() }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="pokemon-font gradient-text">Pokémon Database</h1>
+        <div class="btn-group">
+            <a href="{{ url_for('download_csv') }}" class="btn btn-success">
+                <i class="fas fa-download me-2"></i>Download CSV
+            </a>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-search me-2"></i>Search & Filter</h5>
+                    <input type="text" id="search-input" class="form-control w-25" placeholder="Search Pokémon...">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" id="pokemon-grid">
+        {% for pokemon in pokemon_data %}
+        <div class="col-xl-3 col-lg-4 col-md-6 mb-4 pokemon-item" 
+             data-name="{{ pokemon.name.lower() }}" 
+             data-type="{{ pokemon.type_1.lower() }}"
+             data-number="{{ pokemon.number }}">
+            <div class="card pokemon-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="badge bg-secondary pokemon-font">#{{'%03d'|format(pokemon.number)}}</span>
+                        <div>
+                            <span class="type-badge type-{{ pokemon.type_1.lower() }}">{{ pokemon.type_1 }}</span>
+                            {% if pokemon.type_2 %}
+                            <span class="type-badge type-{{ pokemon.type_2.lower() }}">{{ pokemon.type_2 }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <h5 class="card-title pokemon-font text-center mb-3">{{ pokemon.name }}</h5>
+                    
+                    <div class="row text-center mb-3">
+                        <div class="col-4">
+                            <small class="text-muted d-block">Height</small>
+                            <strong>{{ pokemon.height_m }}m</strong>
+                        </div>
+                        <div class="col-4">
+                            <small class="text-muted d-block">Weight</small>
+                            <strong>{{ pokemon.weight_kg }}kg</strong>
+                        </div>
+                        <div class="col-4">
+                            <small class="text-muted d-block">BMI</small>
+                            <strong>{{ pokemon.bmi }}</strong>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <small class="text-muted">Base Stats</small>
+                            <small class="badge bg-primary">{{ pokemon.stat_total }}</small>
+                        </div>
+                        <div class="stat-bar" data-width="{{ (pokemon.stat_total / 800 * 100) | round(0) }}"></div>
+                    </div>
+
+                    <div class="row small text-muted">
+                        <div class="col-6">HP: {{ pokemon.stat_hp }}</div>
+                        <div class="col-6">ATK: {{ pokemon.stat_attack }}</div>
+                        <div class="col-6">DEF: {{ pokemon.stat_defense }}</div>
+                        <div class="col-6">SPE: {{ pokemon.stat_speed }}</div>
+                    </div>
+
+                    {% if pokemon.abilities %}
+                    <div class="mt-3">
+                        <small class="text-muted d-block">Abilities</small>
+                        <small>{{ pokemon.abilities[:2] | join(", ") }}</small>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="text-center mt-4">
+        <button id="load-more-btn" class="btn btn-outline-primary btn-lg">
+            <i class="fas fa-plus me-2"></i>Load More Pokémon
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let currentPage = 1;
+    let allPokemon = [];
+    let filteredPokemon = [];
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        loadPokemonData();
+        
+        const searchInput = document.getElementById('search-input');
+        const loadMoreBtn = document.getElementById('load-more-btn');
+        
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            filterPokemon(searchTerm);
+        });
+        
+        loadMoreBtn.addEventListener('click', function() {
+            loadMorePokemon();
+        });
+
+        // Initialize stat bars
+        setTimeout(() => {
+            const statBars = document.querySelectorAll('.stat-bar[data-width]');
+            statBars.forEach(bar => {
+                const width = bar.dataset.width + '%';
+                bar.style.width = width;
+            });
+        }, 100);
+    });
+    
+    async function loadPokemonData() {
+        try {
+            const response = await fetch('/api/pokemon?per_page=200');
+            const data = await response.json();
+            allPokemon = data.data;
+            filteredPokemon = [...allPokemon];
+            updateLoadMoreButton(data);
+        } catch (error) {
+            console.error('Error loading Pokemon data:', error);
+        }
+    }
+    
+    function filterPokemon(searchTerm) {
+        const pokemonItems = document.querySelectorAll('.pokemon-item');
+        
+        pokemonItems.forEach(item => {
+            const name = item.dataset.name;
+            const type = item.dataset.type;
+            const number = item.dataset.number;
+            
+            const matches = name.includes(searchTerm) || 
+                          type.includes(searchTerm) || 
+                          number.includes(searchTerm);
+            
+            if (matches) {
+                item.style.display = 'block';
+                item.classList.add('animate__fadeIn');
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+    
+    async function loadMorePokemon() {
+        currentPage++;
+        try {
+            const response = await fetch(`/api/pokemon?page=${currentPage}&per_page=20`);
+            const data = await response.json();
+            
+            if (data.data && data.data.length > 0) {
+                appendPokemonCards(data.data);
+                updateLoadMoreButton(data);
+            }
+        } catch (error) {
+            console.error('Error loading more Pokemon:', error);
+        }
+    }
+    
+    function appendPokemonCards(pokemonList) {
+        const grid = document.getElementById('pokemon-grid');
+        
+        pokemonList.forEach(pokemon => {
+            const card = createPokemonCard(pokemon);
+            grid.appendChild(card);
+        });
+    }
+    
+    function createPokemonCard(pokemon) {
+        const div = document.createElement('div');
+        div.className = 'col-xl-3 col-lg-4 col-md-6 mb-4 pokemon-item';
+        div.dataset.name = pokemon.name.toLowerCase();
+        div.dataset.type = pokemon.type_1.toLowerCase();
+        div.dataset.number = pokemon.number;
+        
+        const type2Badge = pokemon.type_2 ? 
+            `<span class="type-badge type-${pokemon.type_2.toLowerCase()}">${pokemon.type_2}</span>` : '';
+        
+        div.innerHTML = `
+            <div class="card pokemon-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="badge bg-secondary pokemon-font">#${String(pokemon.number).padStart(3, '0')}</span>
+                        <div>
+                            <span class="type-badge type-${pokemon.type_1.toLowerCase()}">${pokemon.type_1}</span>
+                            ${type2Badge}
+                        </div>
+                    </div>
+                    
+                    <h5 class="card-title pokemon-font text-center mb-3">${pokemon.name}</h5>
+                    
+                    <div class="row text-center mb-3">
+                        <div class="col-4">
+                            <small class="text-muted d-block">Height</small>
+                            <strong>${pokemon.height_m}m</strong>
+                        </div>
+                        <div class="col-4">
+                            <small class="text-muted d-block">Weight</small>
+                            <strong>${pokemon.weight_kg}kg</strong>
+                        </div>
+                        <div class="col-4">
+                            <small class="text-muted d-block">BMI</small>
+                            <strong>${pokemon.bmi}</strong>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <small class="text-muted">Base Stats</small>
+                            <small class="badge bg-primary">${pokemon.stat_total}</small>
+                        </div>
+                        <div class="stat-bar" style="width: ${Math.round(pokemon.stat_total / 800 * 100)}%"></div>
+                    </div>
+
+                    <div class="row small text-muted">
+                        <div class="col-6">HP: ${pokemon.stat_hp}</div>
+                        <div class="col-6">ATK: ${pokemon.stat_attack}</div>
+                        <div class="col-6">DEF: ${pokemon.stat_defense}</div>
+                        <div class="col-6">SPE: ${pokemon.stat_speed}</div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        return div;
+    }
+    
+    function updateLoadMoreButton(data) {
+        const loadMoreBtn = document.getElementById('load-more-btn');
+        if (data.page >= data.total_pages) {
+            loadMoreBtn.style.display = 'none';
+        } else {
+            loadMoreBtn.style.display = 'block';
+        }
+    }
+</script>
+{% endblock %}

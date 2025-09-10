@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block title %}Color Gallery - {{ super() }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-5">
+        <div class="col-12 text-center">
+            <h1 class="display-4 fw-bold text-gradient mb-3">Color Gallery</h1>
+            <p class="lead text-muted">Explore a curated collection of beautiful color palettes from various images</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% set sample_palettes = [
+            {
+                'name': 'Ocean Sunset',
+                'colors': ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8'],
+                'description': 'Warm and cool tones reflecting a peaceful ocean sunset'
+            },
+            {
+                'name': 'Forest Morning',
+                'colors': ['#2D5016', '#4F7942', '#8FBC8F', '#228B22', '#32CD32'],
+                'description': 'Fresh greens capturing the essence of a morning forest'
+            },
+            {
+                'name': 'Urban Vibes',
+                'colors': ['#2C3E50', '#34495E', '#7F8C8D', '#95A5A6', '#BDC3C7'],
+                'description': 'Modern grayscale palette perfect for urban designs'
+            },
+            {
+                'name': 'Tropical Paradise',
+                'colors': ['#FF7F50', '#FF6347', '#FFD700', '#ADFF2F', '#00CED1'],
+                'description': 'Vibrant colors reminiscent of tropical destinations'
+            },
+            {
+                'name': 'Autumn Leaves',
+                'colors': ['#8B0000', '#FF8C00', '#FFD700', '#DC143C', '#B22222'],
+                'description': 'Warm autumn colors capturing the beauty of fall foliage'
+            },
+            {
+                'name': 'Lavender Fields',
+                'colors': ['#E6E6FA', '#DDA0DD', '#9370DB', '#8A2BE2', '#4B0082'],
+                'description': 'Soft purples and violets inspired by lavender fields'
+            }
+        ] %}
+
+        {% for palette in sample_palettes %}
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card border-0 shadow-lg h-100">
+                <div class="card-body p-0">
+                    <div class="row g-0" style="height: 120px;">
+                        {% for color in palette.colors %}
+                        <div class="col">
+                            <div class="h-100 color-strip" 
+                                 data-color="{{ color }}"
+                                 data-bs-toggle="tooltip" 
+                                 title="{{ color }}">
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="p-4">
+                        <h5 class="card-title mb-2">{{ palette.name }}</h5>
+                        <p class="card-text text-muted small">{{ palette.description }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex">
+                                {% for color in palette.colors %}
+                                <div class="color-swatch-small me-2 copy-color-btn" 
+                                     data-color="{{ color }}">
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <button class="btn btn-outline-primary btn-sm download-palette-btn" 
+                                    data-palette-name="{{ palette.name }}" 
+                                    data-palette-colors="{{ palette.colors | tojson | e }}">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card border-0 shadow-lg color-info-card">
+                <div class="card-body p-5 text-center">
+                    <i class="fas fa-palette fa-3x text-white mb-4"></i>
+                    <h3 class="text-white mb-3">Create Your Own Palette</h3>
+                    <p class="text-light mb-4">Upload your own images and discover their unique color stories. Our advanced algorithm will extract the most representative colors and provide detailed analysis.</p>
+                    <a href="{{ url_for('home') }}" class="btn btn-light btn-lg">
+                        <i class="fas fa-upload me-2"></i>Start Analyzing
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-12">
+            <h3 class="text-center mb-4">Color Harmony Examples</h3>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card border-0 shadow">
+                        <div class="card-header text-center">
+                            <h6 class="mb-0">Complementary</h6>
+                        </div>
+                        <div class="card-body text-center">
+                            <div class="d-flex justify-content-center mb-3">
+                                <div class="harmony-preview me-2" style="background-color: #FF6B6B;"></div>
+                                <div class="harmony-preview" style="background-color: #6BFFFF;"></div>
+                            </div>
+                            <small class="text-muted">Colors directly opposite on the color wheel</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow">
+                        <div class="card-header text-center">
+                            <h6 class="mb-0">Triadic</h6>
+                        </div>
+                        <div class="card-body text-center">
+                            <div class="d-flex justify-content-center mb-3">
+                                <div class="harmony-preview me-2" style="background-color: #FF6B6B;"></div>
+                                <div class="harmony-preview me-2" style="background-color: #6BFF6B;"></div>
+                                <div class="harmony-preview" style="background-color: #6B6BFF;"></div>
+                            </div>
+                            <small class="text-muted">Three colors evenly spaced on the color wheel</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow">
+                        <div class="card-header text-center">
+                            <h6 class="mb-0">Analogous</h6>
+                        </div>
+                        <div class="card-body text-center">
+                            <div class="d-flex justify-content-center mb-3">
+                                <div class="harmony-preview me-2" style="background-color: #FF6B6B;"></div>
+                                <div class="harmony-preview me-2" style="background-color: #FF6BFF;"></div>
+                                <div class="harmony-preview" style="background-color: #FF6BDB;"></div>
+                            </div>
+                            <small class="text-muted">Colors adjacent to each other on the color wheel</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        document.querySelectorAll('.color-strip, .color-swatch-small').forEach(element => {
+            const color = element.getAttribute('data-color');
+            if (color) {
+                element.style.backgroundColor = color;
+            }
+        });
+
+        document.querySelectorAll('.copy-color-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const color = this.getAttribute('data-color');
+                copyColor(color);
+            });
+        });
+
+        document.querySelectorAll('.download-palette-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const name = this.getAttribute('data-palette-name');
+                const colorsJson = this.getAttribute('data-palette-colors');
+                const colors = JSON.parse(colorsJson);
+                downloadPalette(name, colors);
+            });
+        });
+    });
+
+    function copyColor(color) {
+        navigator.clipboard.writeText(color).then(function() {
+            showToast(`Color ${color} copied to clipboard!`);
+        });
+    }
+
+    function downloadPalette(name, colors) {
+        const palette = {
+            name: name,
+            colors: colors,
+            timestamp: new Date().toISOString()
+        };
+
+        const blob = new Blob([JSON.stringify(palette, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${name.replace(/\s+/g, '_')}_palette.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        showToast(`Palette "${name}" downloaded successfully!`);
+    }
+
+    function showToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'toast-notification';
+        toast.textContent = message;
+        toast.style.cssText = 'position:fixed;top:20px;right:20px;background:#28a745;color:white;padding:15px 25px;border-radius:8px;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,0.15);font-size:14px;';
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(-20px)';
+            toast.style.transition = 'all 0.3s ease';
+            setTimeout(() => toast.remove(), 300);
+        }, 2000);
+    }
+</script>
+{% endblock %}

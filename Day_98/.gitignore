@@ -1,0 +1,19 @@
+# Environment variables (contains sensitive data)
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Generated files
+digest_*.html
+test_config.json
+
+# IDE files
+.vscode/
+*.idea/
+
+# OS files
+.DS_Store
+Thumbs.db

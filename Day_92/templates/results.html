@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+
+{% block title %}Color Analysis Results - {{ super() }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-6 mb-4">
+            <div class="card border-0 shadow-lg">
+                <div class="card-header gradient-bg text-white">
+                    <h5 class="mb-0"><i class="fas fa-image me-2"></i>Original Image</h5>
+                </div>
+                <div class="card-body p-0">
+                    <img src="data:image/{{ image_format }};base64,{{ image_data }}" 
+                         class="w-100" style="max-height: 400px; object-fit: contain;" alt="Analyzed Image">
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle me-1"></i>
+                        {{ image_stats.width }}x{{ image_stats.height }} pixels
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 mb-4">
+            <div class="card border-0 shadow-lg">
+                <div class="card-header gradient-bg text-white">
+                    <h5 class="mb-0"><i class="fas fa-palette me-2"></i>Color Palette</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-0 mb-3">
+                        {% for color in colors %}
+                        <div class="col">
+                            <div class="color-bar" 
+                                 data-color="{{ color.hex }}"
+                                 data-percentage="{{ color.percentage }}"
+                                 data-bs-toggle="tooltip" 
+                                 title="{{ color.name }} ({{ color.percentage }}%)">
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="row g-3">
+                        {% for color in colors %}
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center">
+                                <div class="color-swatch me-3" data-color="{{ color.hex }}"></div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">{{ color.name }}</h6>
+                                    <div class="small text-muted">
+                                        <div>{{ color.hex }}</div>
+                                        <div>RGB({{ color.rgb[0] }}, {{ color.rgb[1] }}, {{ color.rgb[2] }})</div>
+                                        <div>{{ color.percentage }}% coverage</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4 mb-4">
+            <div class="stats-card p-4 text-center">
+                <i class="fas fa-palette fa-2x mb-3"></i>
+                <h3 class="fw-bold">{{ colors|length }}</h3>
+                <p class="mb-0">Colors Extracted</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="stats-card p-4 text-center">
+                <i class="fas fa-thermometer-half fa-2x mb-3"></i>
+                <h3 class="fw-bold">{{ color_analysis.temperature }}</h3>
+                <p class="mb-0">Color Temperature</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="stats-card p-4 text-center">
+                <i class="fas fa-lightbulb fa-2x mb-3"></i>
+                <h3 class="fw-bold">{{ "%.0f"|format(color_analysis.avg_luminance * 100) }}%</h3>
+                <p class="mb-0">Average Brightness</p>
+            </div>
+        </div>
+    </div>
+
+    {% if harmonies %}
+    <div class="row">
+        {% for harmony_type, harmony_colors in harmonies.items() %}
+        <div class="col-lg-4 mb-4">
+            <div class="card border-0 shadow">
+                <div class="card-header">
+                    <h6 class="mb-0 text-capitalize">
+                        <i class="fas fa-circle-notch me-2"></i>{{ harmony_type }} Colors
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-center mb-3">
+                        {% for color in harmony_colors %}
+                        <div class="harmony-preview me-2" data-color="{{ color }}"></div>
+                        {% endfor %}
+                    </div>
+                    <div class="text-center">
+                        {% for color in harmony_colors %}
+                        <small class="d-block text-muted">{{ color }}</small>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="row mt-4">
+        <div class="col-md-6 mb-3">
+            <a href="{{ url_for('home') }}" class="btn btn-outline-primary btn-lg w-100">
+                <i class="fas fa-upload me-2"></i>Analyze Another Image
+            </a>
+        </div>
+        <div class="col-md-6 mb-3">
+            <button class="btn btn-success btn-lg w-100" id="downloadResultsBtn">
+                <i class="fas fa-download me-2"></i>Download Results
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script id="color-data" type="application/json">
+{
+    "colors": [
+        {% for color in colors %}
+        {
+            "name": "{{ color.name }}",
+            "hex": "{{ color.hex }}",
+            "rgb": [{{ color.rgb[0] }}, {{ color.rgb[1] }}, {{ color.rgb[2] }}],
+            "percentage": {{ color.percentage }}
+        }{{ "," if not loop.last }}
+        {% endfor %}
+    ],
+    "analysis": {
+        "temperature": "{{ color_analysis.temperature }}",
+        "avgLuminance": {{ color_analysis.avg_luminance }}
+    }
+}
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const colorResults = JSON.parse(document.getElementById('color-data').textContent);
+        
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        document.querySelectorAll('.color-bar').forEach(bar => {
+            const color = bar.getAttribute('data-color');
+            const percentage = bar.getAttribute('data-percentage');
+            if (color && percentage) {
+                bar.style.backgroundColor = color;
+                bar.style.width = percentage + '%';
+            }
+        });
+
+        document.querySelectorAll('.color-swatch').forEach(swatch => {
+            const color = swatch.getAttribute('data-color');
+            if (color) {
+                swatch.style.backgroundColor = color;
+            }
+        });
+
+        document.querySelectorAll('.harmony-preview').forEach(preview => {
+            const color = preview.getAttribute('data-color');
+            if (color) {
+                preview.style.backgroundColor = color;
+            }
+        });
+
+        document.getElementById('downloadResultsBtn').addEventListener('click', function() {
+            const blob = new Blob([JSON.stringify(colorResults, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'color_analysis_results.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        document.querySelectorAll('.color-swatch').forEach(swatch => {
+            swatch.addEventListener('click', function() {
+                const colorName = this.parentElement.querySelector('h6').textContent;
+                navigator.clipboard.writeText(colorName);
+                
+                const toast = document.createElement('div');
+                toast.className = 'toast-notification';
+                toast.textContent = 'Color copied to clipboard!';
+                toast.style.cssText = 'position:fixed;top:20px;right:20px;background:#28a745;color:white;padding:10px 20px;border-radius:5px;z-index:9999;';
+                document.body.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.remove();
+                }, 2000);
+            });
+        });
+    });
+</script>
+{% endblock %}
